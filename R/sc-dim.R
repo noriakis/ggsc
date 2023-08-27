@@ -74,13 +74,15 @@ get_dim_data_sc <- function(object, features = NULL,
     }
     if (!is.null(dims)) {
         if (is.null(reduction)) {
-            reduction <- SingleCellExperiment::reducedDims(pbmc_small) |>
+            reduction <- SingleCellExperiment::reducedDims(object) |>
                 names() |> _[1]
         }
         reducedMat <- SingleCellExperiment::reducedDims(object)[[reduction]] |>
             as.data.frame()
         dims <- reducedMat |> colnames() |> _[dims]
     }
+    
+    ## Obtain feature from specified assay
     if (is.null(features)) {
         feats <- NULL
         bind_df <- cbind(reducedMat[, dims],
@@ -92,6 +94,8 @@ get_dim_data_sc <- function(object, features = NULL,
             feats,
             object |> colData() |> as.data.frame())
     }
+    
+    ## make `ident` column for the downstream analysis
     bind_df[cells, ] |> mutate(ident=!!sym(colour_by))
 }
 

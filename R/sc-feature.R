@@ -32,10 +32,8 @@ sc_feature <- function(object, features,
                         dims = dims, reduction = reduction, 
                         cells = cells, slot = slot)
     }
-    print(which(colnames(d) %in% features))
     d2 <- tidyr::pivot_longer(d, which(colnames(d) %in% features),
         names_to = "features")
-    print(d2 |> relocate(features, value))
     d2$features <- factor(d2$features, features)
 
     default_mapping <- aes_string(color="value")

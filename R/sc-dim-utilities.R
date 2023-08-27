@@ -29,15 +29,23 @@ sc_dim_geom_feature <- function(object, features, dims = c(1,2), ncol=3, ...,
 ##' @importFrom tibble as_tibble
 ##' @export
 ggplot_add.sc_dim_geom_feature <- function(object, plot, object_name){
-    d <- get_dim_data(object$data, dims=object$dims, features=object$features)
+	if (inherits(object$data, "SingleCellExperiment")) {
+		d <- get_dim_data_sc(object$data, dims=object$dims,
+	    	features=object$features)
+	} else {
+	    d <- get_dim_data(object$data, dims=object$dims,
+	    	features=object$features)
+	}
     d <- as_tibble(d, rownames='.ID.NAME')
-    d <- tidyr::pivot_longer(d, 5:ncol(d), names_to = "features") |> 
-         dplyr::select(-c(2, 3, 4)) |>
-         dplyr::left_join(plot$data[,seq_len(3)] |>
-                          tibble::as_tibble(rownames='.ID.NAME'), 
-                          by='.ID.NAME'
-         )
+    
+    d <- tidyr::pivot_longer(d, which(colnames(d) %in% object$features),
+    	    names_to = "features")
+
+    d <- cbind(plot$data[d$.ID.NAME,], d[,c("features","value")])
+         # dplyr::select(-c(2, 3, 4)) |>
+         # dplyr::left_join(plot$data[,seq_len(2)])
     d$features <- factor(d$features, levels = object$features)
+    
     d <- object$.fun(d)
     sc.point.params <- object$params
     sc.point.params$data <- d
