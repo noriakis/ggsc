@@ -19,13 +19,23 @@
 ##' @importFrom ggplot2 rel
 ##' @export
 sc_feature <- function(object, features, 
-                    dims=c(1,2), reduction=NULL, 
+                    dims=c(1,2), reduction=NULL, assay=NULL, colour_by="label",
                     cells=NULL, slot = "data", mapping=NULL, ncol=3, ...) {
-    d <- get_dim_data(object = object, features = features,
-                    dims = dims, reduction = reduction, 
-                    cells = cells, slot = slot)
 
-    d2 <- tidyr::pivot_longer(d, 4:ncol(d), names_to = "features")
+    if (inherits(object, "SingleCellExperiment")) {
+        d <- get_dim_data_sc(object = object, features = features,
+                    dims = dims, reduction = reduction, 
+                    cells = cells, slot = slot, assay=assay,
+                    colour_by=colour_by)
+    } else {
+        d <- get_dim_data(object = object, features = features,
+                        dims = dims, reduction = reduction, 
+                        cells = cells, slot = slot)
+    }
+    print(which(colnames(d) %in% features))
+    d2 <- tidyr::pivot_longer(d, which(colnames(d) %in% features),
+        names_to = "features")
+    print(d2 |> relocate(features, value))
     d2$features <- factor(d2$features, features)
 
     default_mapping <- aes_string(color="value")

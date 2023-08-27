@@ -8,14 +8,16 @@ sc_dim(
   object,
   dims = c(1, 2),
   reduction = NULL,
+  colour_by = "label",
   cells = NULL,
   slot = "data",
+  assay = NULL,
   mapping = NULL,
   ...
 )
 }
 \arguments{
-\item{object}{Seurat object}
+\item{object}{Seurat or SingleCellExperiment object}
 
 \item{dims}{selected dimensions (must be a two-length vector) that are used in visualization}
 

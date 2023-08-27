@@ -9,6 +9,8 @@ sc_feature(
   features,
   dims = c(1, 2),
   reduction = NULL,
+  assay = NULL,
+  colour_by = "label",
   cells = NULL,
   slot = "data",
   mapping = NULL,
